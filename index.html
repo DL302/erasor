@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Space Invaders</title>
+    <p>Basic Javascript Space Invaders[sort of]</p>
+    <p>Controls:WASD keys or arrow keys to move around, spacebar to shoot</p>
+    <style type="text/css">
+		canvas:hover {
+			cursor: crosshair;
+		}
+	</style>
+  </head>
+  <body>
+<script>
+map = {};
+px=py=100;
+pd=30;
+ps=15;
+el=[];
+ed=25;
+es=5;
+sl=[];
+sd=4;
+ss=7;
+function calculateMousePos(evt) {
+    var rect = canvas.getBoundingClientRect();
+    var root = document.documentElement;
+    var mouseX = evt.clientX - rect.left - root.scrollLeft;
+    var mouseY = evt.clientY - rect.top - root.scrollTop;
+    return {
+      x:mouseX,
+      y:mouseY
+    };
+  }
+window.onload = function() {
+    canvas=document.createElement("canvas");
+    canvas.width=1700;
+    canvas.height=850;
+    document.body.appendChild(canvas);
+    context=canvas.getContext("2d");
+	var fps = 100;
+    setInterval(update,1000/fps);
+    setInterval(spawn,2000);
+    document.addEventListener('keydown',keyPush);
+}
+function spawn() {
+    el.push({x:canvas.width,y:Math.random()*canvas.height});
+}
+function update() {
+    context.fillStyle="black";
+    context.fillRect(0,0,canvas.width,canvas.height);
+    context.fillStyle="#00FF00";
+    context.fillRect(px-pd/2,py-pd/2,pd,pd);
+    context.fillStyle="#FFFFFF";
+    for(var s=0;s<sl.length;s++) {
+        sl[s].x += ss;
+        context.fillRect(sl[s].x-sd/2,sl[s].y-sd/2,sd,sd);
+        for(var e=el.length-1;e>=0;e--) {
+            var dx=Math.abs(el[e].x-sl[s].x);
+            var dy=Math.abs(el[e].y-sl[s].y);
+            var dist=Math.sqrt(dx*dx+dy*dy);
+            if(dist< (sd+ed)/2) {
+                el.splice(e,1);
+            }
+        }
+    }
+	//enemy
+    context.fillStyle="#FF0000";
+    for(var e=0;e<el.length;e++) {
+        el[e].x -= es;
+        context.fillRect(el[e].x-ed/2,el[e].y-ed/2,ed,ed);
+        var dx=Math.abs(el[e].x-px);
+        var dy=Math.abs(el[e].y-py);
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist< (pd+ed)/2) {
+            sl=[];
+            el=[];
+            px=py=100;
+            break;
+        }
+    }
+}
+function keyPush(evt) {
+    switch(evt.keyCode) {
+        case 32:
+            sl.push({x:px,y:py});
+            break;
+        case 37:
+            px-=ps;
+            break;
+        case 38:
+            py-=ps;
+            break;
+        case 39:
+            px+=ps;
+            break;
+        case 40:
+            py+=ps;
+            break;
+        case 65:
+          px-=ps;
+          break;
+        case 87:
+          py-=ps;
+          break;
+        case 68:
+          px+=ps;
+          break;
+        case 83:
+          py+=ps;
+          break;
+    }
+}
+</script>
+</body>
+</html>
